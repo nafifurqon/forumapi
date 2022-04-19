@@ -1,0 +1,21 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true,
+        "node": true,
+        "jest": true
+    },
+    "extends": [
+        "airbnb-base"
+    ],
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "rules": {
+        "no-underscore-dangle": "off",
+        "class-methods-use-this": "off",
+        "no-console": ["error", { "allow": ["warn", "error"] }],
+        "no-unused-vars": "off"
+    }
+}
