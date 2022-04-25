@@ -2,6 +2,7 @@ const pool = require('../../database/postgres/pool');
 const AuthenticationsTableTestHelper = require('../../../../tests/AuthenticationsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
 const createServer = require('../createServer');
 const container = require('../../container');
 
@@ -14,10 +15,41 @@ describe('/threads endpoint', () => {
     await UsersTableTestHelper.cleanTable();
     await AuthenticationsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
+    await CommentsTableTestHelper.cleanTable();
+  });
+
+  let globalUserAccessToken = '';
+
+  beforeEach(async () => {
+    const server = await createServer(container);
+
+    // add user
+    await server.inject({
+      method: 'POST',
+      url: '/users',
+      payload: {
+        username: 'dicoding',
+        password: 'secret',
+        fullname: 'Dicoding Indonesia',
+      },
+    });
+
+    // login user
+    const loginResponse = await server.inject({
+      method: 'POST',
+      url: '/authentications',
+      payload: {
+        username: 'dicoding',
+        password: 'secret',
+      },
+    });
+
+    const { data: { accessToken } } = JSON.parse(loginResponse.payload);
+    globalUserAccessToken = accessToken;
   });
 
   describe('when POST /threads', () => {
-    it('should response 401 when request without authorization token', async () => {
+    it('should response 401 when request with invalid authorization token', async () => {
       // Arrange
       const requestPayload = {
         title: 'Judul Thread',
@@ -48,35 +80,13 @@ describe('/threads endpoint', () => {
 
       const server = await createServer(container);
 
-      // add user
-      await server.inject({
-        method: 'POST',
-        url: '/users',
-        payload: {
-          username: 'dicoding',
-          password: 'secret',
-          fullname: 'Dicoding Indonesia',
-        },
-      });
-
-      // login user
-      const loginResponse = await server.inject({
-        method: 'POST',
-        url: '/authentications',
-        payload: {
-          username: 'dicoding',
-          password: 'secret',
-        },
-      });
-      const { data: { accessToken } } = JSON.parse(loginResponse.payload);
-
       // Action
       const response = await server.inject({
         method: 'POST',
         url: '/threads',
         payload: requestPayload,
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${globalUserAccessToken}`,
         },
       });
 
@@ -96,35 +106,13 @@ describe('/threads endpoint', () => {
 
       const server = await createServer(container);
 
-      // add user
-      await server.inject({
-        method: 'POST',
-        url: '/users',
-        payload: {
-          username: 'dicoding',
-          password: 'secret',
-          fullname: 'Dicoding Indonesia',
-        },
-      });
-
-      // login user
-      const loginResponse = await server.inject({
-        method: 'POST',
-        url: '/authentications',
-        payload: {
-          username: 'dicoding',
-          password: 'secret',
-        },
-      });
-      const { data: { accessToken } } = JSON.parse(loginResponse.payload);
-
       // Action
       const response = await server.inject({
         method: 'POST',
         url: '/threads',
         payload: requestPayload,
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${globalUserAccessToken}`,
         },
       });
 
@@ -144,35 +132,13 @@ describe('/threads endpoint', () => {
 
       const server = await createServer(container);
 
-      // add user
-      await server.inject({
-        method: 'POST',
-        url: '/users',
-        payload: {
-          username: 'dicoding',
-          password: 'secret',
-          fullname: 'Dicoding Indonesia',
-        },
-      });
-
-      // login user
-      const loginResponse = await server.inject({
-        method: 'POST',
-        url: '/authentications',
-        payload: {
-          username: 'dicoding',
-          password: 'secret',
-        },
-      });
-      const { data: { accessToken } } = JSON.parse(loginResponse.payload);
-
       // Action
       const response = await server.inject({
         method: 'POST',
         url: '/threads',
         payload: requestPayload,
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${globalUserAccessToken}`,
         },
       });
 
