@@ -196,4 +196,206 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(typeof addedComment.owner).toEqual('string');
     });
   });
+
+  describe('when DELETE /threads/{threadId}/comments/{commentId}', () => {
+    it('should response 401 when request with invalid authorization token', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // add comment
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: 'Komentar',
+        },
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+      const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
+      const { data: { addedComment } } = addCommentResponseJson;
+      const commentId = addedComment.id;
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          Authorization: 'invalid-access-token',
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toBeDefined();
+      expect(responseJson.message).toEqual('Missing authentication');
+    });
+
+    it('should response 404 when thread is not found', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // add comment
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: 'Komentar',
+        },
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+      const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
+      const { data: { addedComment } } = addCommentResponseJson;
+      const commentId = addedComment.id;
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/not-found-thread-id/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.message).toBeDefined();
+      expect(responseJson.message).toEqual('thread tidak ditemukan di database');
+    });
+
+    it('should response 404 when comment is not found', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/not-found-comment-id`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.message).toBeDefined();
+      expect(responseJson.message).toEqual('komentar tidak ditemukan di database');
+    });
+
+    it('should response 403 when owner can not access the comment', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // add another user
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: {
+          username: 'anotheruser',
+          password: 'secret',
+          fullname: 'Another User',
+        },
+      });
+
+      // login another user
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'anotheruser',
+          password: 'secret',
+        },
+      });
+      const { data } = JSON.parse(loginResponse.payload);
+      const anotherUserToken = data.accessToken;
+
+      // add comment
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: 'Komentar',
+        },
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+      const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
+      const { data: { addedComment } } = addCommentResponseJson;
+      const commentId = addedComment.id;
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${anotherUserToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(403);
+      expect(responseJson.message).toBeDefined();
+      expect(responseJson.message).toEqual('anda tidak berhak mengakses komentar tersebut');
+    });
+
+    it('should response 200 when delete comment', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // add another user
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: {
+          username: 'anotheruser',
+          password: 'secret',
+          fullname: 'Another User',
+        },
+      });
+
+      // login another user
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'anotheruser',
+          password: 'secret',
+        },
+      });
+      const { data } = JSON.parse(loginResponse.payload);
+      const anotherUserToken = data.accessToken;
+
+      // add comment
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: 'Komentar',
+        },
+        headers: {
+          Authorization: `Bearer ${anotherUserToken}`,
+        },
+      });
+      const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
+      const { data: { addedComment } } = addCommentResponseJson;
+      const commentId = addedComment.id;
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${anotherUserToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+  });
 });
