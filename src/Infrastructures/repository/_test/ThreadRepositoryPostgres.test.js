@@ -40,7 +40,7 @@ describe('ThreadRepositoryPostgres', () => {
   });
 
   describe('checkAvailabilityThread', () => {
-    it('should throw InvariantError when thread not available', async () => {
+    it('should throw NotFoundError when thread not available', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool);
       const threadId = 'not-found-thread-id';
@@ -50,7 +50,7 @@ describe('ThreadRepositoryPostgres', () => {
         .rejects.toThrow(NotFoundError);
     });
 
-    it('should not to throw InvariantError when thread available', async () => {
+    it('should not to throw NotFoundError when thread available', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool);
       const threadId = 'thread-123';

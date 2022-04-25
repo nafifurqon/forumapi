@@ -3,7 +3,7 @@ const CommentRepository = require('../../../Domains/comments/CommentRepository')
 const NewComment = require('../../../Domains/comments/entities/NewComment');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 
-describe('first', () => {
+describe('AddCommentUseCase', () => {
   it('should orchestrating the add comment action correctly', async () => {
     // Arrange
     const useCasePayload = {
