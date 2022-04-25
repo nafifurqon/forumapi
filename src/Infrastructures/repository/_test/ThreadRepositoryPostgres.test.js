@@ -1,12 +1,13 @@
-const ThreadsTableHelper = require('../../../../tests/ThreadsTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const NewThread = require('../../../Domains/threads/entities/NewThread');
 const pool = require('../../database/postgres/pool');
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres');
 
 describe('ThreadRepositoryPostgres', () => {
   afterEach(async () => {
-    await ThreadsTableHelper.cleanTable();
+    await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
   });
 
@@ -33,8 +34,36 @@ describe('ThreadRepositoryPostgres', () => {
       await threadRepositoryPostgres.addThread(newThread);
 
       // Assert
-      const threads = await ThreadsTableHelper.findThreadsById('thread-123');
+      const threads = await ThreadsTableTestHelper.findThreadsById('thread-123');
       expect(threads).toHaveLength(1);
+    });
+  });
+
+  describe('checkAvailabilityThread', () => {
+    it('should throw InvariantError when thread not available', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool);
+      const threadId = 'not-found-thread-id';
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.checkAvailabilityThread(threadId))
+        .rejects.toThrow(NotFoundError);
+    });
+
+    it('should not to throw InvariantError when thread available', async () => {
+      // Arrange
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool);
+      const threadId = 'thread-123';
+
+      await UsersTableTestHelper.addUser({ id: 'user-123' });
+      const users = await UsersTableTestHelper.findUsersById('user-123');
+      const userId = users[0].id;
+
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+
+      // Action & Assert
+      await expect(threadRepositoryPostgres.checkAvailabilityThread(threadId))
+        .resolves.not.toThrow(NotFoundError);
     });
   });
 });
