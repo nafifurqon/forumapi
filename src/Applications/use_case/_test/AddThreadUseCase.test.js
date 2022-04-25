@@ -3,7 +3,7 @@ const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const NewThread = require('../../../Domains/threads/entities/NewThread');
 
 describe('AddThreadUseCase', () => {
-  it('should orchestrating the add user action correctly', async () => {
+  it('should orchestrating the add thread action correctly', async () => {
     // Assert
     const useCasePayload = {
       title: 'Judul Thread',
