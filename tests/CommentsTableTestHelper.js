@@ -7,9 +7,10 @@ const CommentsTableTestHelper = {
     content = 'Komentar',
     threadId = 'thread-123',
     owner = 'user-123',
+    date,
   }) {
     const isDelete = false;
-    const now = new Date().toISOString();
+    const now = date || new Date().toISOString();
     const createdAt = now;
     const updatedAt = now;
 
@@ -29,6 +30,15 @@ const CommentsTableTestHelper = {
 
     const result = await pool.query(query);
     return result.rows;
+  },
+
+  async deleteCommentById(id) {
+    const query = {
+      text: 'DELETE FROM comments WHERE id = $1',
+      values: [id],
+    };
+
+    await pool.query(query);
   },
 
   async cleanTable() {

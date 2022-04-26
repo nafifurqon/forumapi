@@ -7,8 +7,9 @@ const ThreadsTableTestHelper = {
     title = 'Judul',
     body = 'Body',
     owner = 'user-123',
+    date,
   }) {
-    const now = new Date().toISOString();
+    const now = date || new Date().toISOString();
     const createdAt = now;
     const updatedAt = now;
 

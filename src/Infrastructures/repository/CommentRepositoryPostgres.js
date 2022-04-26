@@ -2,6 +2,7 @@ const AuthorizationError = require('../../Commons/exceptions/AuthorizationError'
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
+const DetailComment = require('../../Domains/comments/entities/DetailComment');
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -36,7 +37,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    if (result.rows.length === 0) {
+    if (!result.rowCount) {
       throw new NotFoundError('komentar tidak ditemukan di database');
     }
   }
@@ -49,7 +50,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    if (result.rows.length === 0) {
+    if (!result.rowCount) {
       throw new AuthorizationError('anda tidak berhak mengakses komentar tersebut');
     }
   }
@@ -65,6 +66,25 @@ class CommentRepositoryPostgres extends CommentRepository {
     };
 
     const result = await this._pool.query(query);
+  }
+
+  async getCommentsByThreadId(threadId) {
+    const query = {
+      text: 'SELECT c.id, u.username, c.created_at as date, c.content '
+      + 'FROM comments as c '
+      + 'LEFT JOIN users as u ON u.id = c.owner '
+      + 'WHERE thread_id = $1 '
+      + 'ORDER BY created_at ASC',
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      return [];
+    }
+
+    return result.rows.map((row) => new DetailComment(row));
   }
 }
 

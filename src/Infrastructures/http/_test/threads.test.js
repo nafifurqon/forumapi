@@ -160,4 +160,256 @@ describe('/threads endpoint', () => {
       expect(typeof addedThread.owner).toEqual('string');
     });
   });
+
+  describe('when GET /threads/{threadId}', () => {
+    it('should response 404 when thread not found', async () => {
+      // Arrange
+      const server = await createServer(container);
+      const notFoundThreadId = 'not-found-thread-id';
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${notFoundThreadId}`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toEqual('thread tidak ditemukan di database');
+    });
+
+    it('should response 200 and detail thread correctly when thread available', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      const addThreadPayload = {
+        title: 'Judul Thread',
+        body: 'Body thread.',
+      };
+
+      const addCommentPayload = {
+        content: 'Komentar',
+      };
+
+      // add thread
+      const addThreadResponse = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: addThreadPayload,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+      const addThreadResponseJson = JSON.parse(addThreadResponse.payload);
+      const { data: { addedThread } } = addThreadResponseJson;
+      const threadId = addedThread.id;
+
+      // add comment
+      await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: addCommentPayload,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toBeDefined();
+
+      const { thread } = responseJson.data;
+      expect(thread.id).toBeDefined();
+      expect(thread.id).not.toEqual('');
+      expect(typeof thread.id).toEqual('string');
+      expect(thread.title).toBeDefined();
+      expect(thread.title).not.toEqual('');
+      expect(typeof thread.title).toEqual('string');
+      expect(thread.body).toBeDefined();
+      expect(thread.body).not.toEqual('');
+      expect(typeof thread.body).toEqual('string');
+      expect(thread.date).toBeDefined();
+      expect(thread.date).not.toEqual('');
+      expect(typeof thread.date).toEqual('string');
+      expect(thread.username).toBeDefined();
+      expect(thread.username).not.toEqual('');
+      expect(typeof thread.username).toEqual('string');
+      expect(thread.comments).toBeDefined();
+      expect(thread.comments).toHaveLength(1);
+    });
+
+    it('should response 200 and detail thread correctly after delete comment', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      const addThreadPayload = {
+        title: 'Judul Thread',
+        body: 'Body thread.',
+      };
+
+      const addCommentPayload = {
+        content: 'Komentar',
+      };
+
+      // add thread
+      const addThreadResponse = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: addThreadPayload,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+      const addThreadResponseJson = JSON.parse(addThreadResponse.payload);
+      const { data: { addedThread } } = addThreadResponseJson;
+      const threadId = addedThread.id;
+
+      // add comment
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: addCommentPayload,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+      const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
+      const { data: { addedComment } } = addCommentResponseJson;
+      const commentId = addedComment.id;
+
+      // delete comment
+      await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toBeDefined();
+
+      const { thread } = responseJson.data;
+      expect(thread.id).toBeDefined();
+      expect(thread.id).not.toEqual('');
+      expect(typeof thread.id).toEqual('string');
+      expect(thread.title).toBeDefined();
+      expect(thread.title).not.toEqual('');
+      expect(typeof thread.title).toEqual('string');
+      expect(thread.body).toBeDefined();
+      expect(thread.body).not.toEqual('');
+      expect(typeof thread.body).toEqual('string');
+      expect(thread.date).toBeDefined();
+      expect(thread.date).not.toEqual('');
+      expect(typeof thread.date).toEqual('string');
+      expect(thread.username).toBeDefined();
+      expect(thread.username).not.toEqual('');
+      expect(typeof thread.username).toEqual('string');
+      expect(thread.comments).toBeDefined();
+      expect(thread.comments).toHaveLength(1);
+      expect(thread.comments[0].content).toEqual('**komentar telah dihapus**');
+    });
+
+    it('should response 200 and detail thread correctly and sorted comment form most past', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      const addThreadPayload = {
+        title: 'Judul Thread',
+        body: 'Body thread.',
+      };
+
+      const addCommentPayload = {
+        content: 'Komentar',
+      };
+
+      // add thread
+      const addThreadResponse = await server.inject({
+        method: 'POST',
+        url: '/threads',
+        payload: addThreadPayload,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+      const addThreadResponseJson = JSON.parse(addThreadResponse.payload);
+      const { data: { addedThread } } = addThreadResponseJson;
+      const threadId = addedThread.id;
+
+      // add first comment
+      await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: 'Komentar 1',
+        },
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // add second comment
+      await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: 'Komentar 2',
+        },
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toBeDefined();
+
+      const { thread } = responseJson.data;
+      expect(thread.comments).toBeDefined();
+      expect(thread.comments).toHaveLength(2);
+
+      const firstCommentDate = new Date(thread.comments[0].date);
+      const secondCommentDate = new Date(thread.comments[1].date);
+      expect(firstCommentDate.getTime()).toBeLessThan(secondCommentDate.getTime());
+    });
+  });
 });

@@ -5,6 +5,7 @@ const pool = require('../../database/postgres/pool');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
+const DetailComment = require('../../../Domains/comments/entities/DetailComment');
 
 describe('CommentRepositoryPostgres', () => {
   afterEach(async () => {
@@ -154,6 +155,179 @@ describe('CommentRepositoryPostgres', () => {
 
       expect(commentAfterDelete.is_delete).toEqual(expectedDeletedComment.is_delete);
       expect(commentAfterDelete.content).toEqual(expectedDeletedComment.content);
+    });
+  });
+
+  describe('getCommentsByThreadId function', () => {
+    it('should return empty array when comments not found', async () => {
+      // Arrange
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
+      const threadId = 'thread-123';
+      const userId = 'user-123';
+
+      await UsersTableTestHelper.addUser({ id: userId });
+      await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId(threadId);
+
+      // Assert
+      expect(comments).toHaveLength(0);
+    });
+
+    it('should return array or list of comments correctly', async () => {
+      // Arrange
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
+      const now = new Date().toISOString();
+
+      const user = {
+        id: 'user-123',
+        username: 'user1',
+        fullname: 'First User',
+      };
+
+      const thread = {
+        id: 'thread-123',
+        title: 'Judul',
+        body: 'Body',
+        owner: user.id,
+        date: now,
+      };
+
+      const comment = {
+        id: 'comment-123',
+        threadId: thread.id,
+        date: now,
+        content: 'Komentar',
+        owner: user.id,
+      };
+
+      const expectedDetailComment = {
+        id: 'comment-123',
+        username: user.username,
+        date: comment.date,
+        content: comment.content,
+      };
+
+      await UsersTableTestHelper.addUser({ ...user });
+      await ThreadsTableTestHelper.addThread({ ...thread });
+      await CommentsTableTestHelper.addComment({ ...comment });
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId(thread.id);
+
+      // Assert
+      expect(comments).toHaveLength(1);
+      expect(comments[0]).toStrictEqual(new DetailComment({ ...expectedDetailComment }));
+    });
+
+    it('should return array or list of comments correctly and content = "komentar telah dihapus" '
+      + 'when comment was deleted.', async () => {
+      // Arrange
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
+      const now = new Date().toISOString();
+
+      const user = {
+        id: 'user-123',
+        username: 'user1',
+        fullname: 'First User',
+      };
+
+      const thread = {
+        id: 'thread-123',
+        title: 'Judul',
+        body: 'Body',
+        owner: user.id,
+        date: now,
+      };
+
+      const comment = {
+        id: 'comment-123',
+        threadId: thread.id,
+        date: now,
+        content: 'Komentar',
+        owner: user.id,
+      };
+
+      const expectedDeletedComment = {
+        id: 'comment-123',
+        username: user.username,
+        date: now,
+        content: '**komentar telah dihapus**',
+      };
+
+      await UsersTableTestHelper.addUser({ ...user });
+      await ThreadsTableTestHelper.addThread({ ...thread });
+      await CommentsTableTestHelper.addComment({ ...comment });
+      await commentRepositoryPostgres.deleteComment(comment.id);
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId(thread.id);
+
+      // Assert
+      expect(comments).toHaveLength(1);
+      expect(comments[0]).toStrictEqual(new DetailComment({ ...expectedDeletedComment }));
+    });
+
+    it('should return array or list of comments sorted form most past', async () => {
+      // Arrange
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
+
+      const firstUser = {
+        id: 'user-001',
+        username: 'user1',
+        fullname: 'First User',
+      };
+      const secondUser = {
+        id: 'user-002',
+        username: 'user2',
+        fullname: 'Second User',
+      };
+
+      const thread = {
+        id: 'thread-123',
+        title: 'Judul',
+        body: 'Body',
+        owner: firstUser.id,
+        date: new Date().toISOString(),
+      };
+
+      const secondUserComment = {
+        id: 'comment-001',
+        content: 'Komentar 1',
+        threadId: thread.id,
+        owner: secondUser.id,
+        date: new Date('2022-04-25').toISOString(),
+      };
+
+      const firstUserComment = {
+        id: 'comment-002',
+        content: 'Komentar 2',
+        threadId: thread.id,
+        owner: firstUser.id,
+        date: new Date().toISOString(),
+      };
+
+      // add user
+      await UsersTableTestHelper.addUser({ ...firstUser });
+      await UsersTableTestHelper.addUser({ ...secondUser });
+
+      // add thread
+      await ThreadsTableTestHelper.addThread({ ...thread });
+
+      // add comment
+      await CommentsTableTestHelper.addComment({ ...secondUserComment });
+      await CommentsTableTestHelper.addComment({ ...firstUserComment });
+
+      // Action
+      const comments = await commentRepositoryPostgres.getCommentsByThreadId(thread.id);
+
+      // Assert
+      const firstCommentDate = new Date(comments[0].date);
+      const secondCommentDate = new Date(comments[1].date);
+
+      expect(comments).toHaveLength(2);
+      expect(firstCommentDate.getTime()).toBeLessThan(secondCommentDate.getTime());
     });
   });
 });
