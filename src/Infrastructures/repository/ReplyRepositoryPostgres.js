@@ -1,6 +1,8 @@
 const ReplyRepository = require('../../Domains/replies/ReplyRepository');
 const AddedReply = require('../../Domains/replies/entities/AddedReply');
 const DetailReply = require('../../Domains/replies/entities/DetailReply');
+const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 
 class ReplyRepositoryPostgres extends ReplyRepository {
   constructor(pool, idGenerator) {
@@ -44,6 +46,45 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     }
 
     return result.rows.map((row) => new DetailReply(row));
+  }
+
+  async checkAvailabilityReply(replyId) {
+    const query = {
+      text: 'SELECT id FROM replies WHERE id = $1',
+      values: [replyId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('balasan tidak ditemukan di database');
+    }
+  }
+
+  async verifyReplyAccess({ replyId, owner }) {
+    const query = {
+      text: 'SELECT * FROM replies WHERE id = $1 and owner = $2',
+      values: [replyId, owner],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new AuthorizationError('anda tidak berhak mengakses balasan tersebut');
+    }
+  }
+
+  async deleteReply(replyId) {
+    const updatedIsDelete = true;
+    const updatedContent = '**balasan telah dihapus**';
+
+    const query = {
+      text: 'UPDATE replies SET is_delete = $1, content = $2 '
+      + 'WHERE id = $3',
+      values: [updatedIsDelete, updatedContent, replyId],
+    };
+
+    const result = await this._pool.query(query);
   }
 }
 
