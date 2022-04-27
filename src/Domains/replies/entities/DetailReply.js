@@ -1,25 +1,24 @@
-class DetailComment {
+class DetailReply {
   constructor(payload) {
     this._verifyPayload(payload);
 
     const {
-      id, username, date, content, replies,
+      id, username, date, content,
     } = payload;
 
     this.id = id;
     this.username = username;
     this.date = date;
     this.content = content;
-    this.replies = replies || [];
   }
 
   _verifyPayload(payload) {
     const {
-      id, username, date, content, replies,
+      id, username, date, content,
     } = payload;
 
     if (!id || !username || !date || !content) {
-      throw new Error('DETAIL_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
+      throw new Error('DETAIL_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
     if (
@@ -27,11 +26,10 @@ class DetailComment {
       || typeof username !== 'string'
       || typeof date !== 'string'
       || typeof content !== 'string'
-      || (replies && !Array.isArray(replies))
     ) {
-      throw new Error('DETAIL_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
+      throw new Error('DETAIL_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
 }
 
-module.exports = DetailComment;
+module.exports = DetailReply;

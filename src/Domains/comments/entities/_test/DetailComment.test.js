@@ -7,7 +7,6 @@ describe('a DetailComment entities', () => {
       id: 'comment-_pby2_tmXV6bcvcdev8xk',
       username: 'johndoe',
       date: '2021-08-08T07:22:33.555Z',
-      // content: 'sebuah comment',
     };
 
     // Action & Assert
@@ -21,6 +20,7 @@ describe('a DetailComment entities', () => {
       username: true,
       date: '2021-08-08T07:22:33.555Z',
       content: 12345,
+      replies: [],
     };
 
     // Action & Assert
@@ -38,7 +38,7 @@ describe('a DetailComment entities', () => {
 
     // Action
     const {
-      id, username, date, content,
+      id, username, date, content, replies,
     } = new DetailComment(payload);
 
     // Assert
@@ -46,5 +46,6 @@ describe('a DetailComment entities', () => {
     expect(username).toEqual(payload.username);
     expect(date).toEqual(payload.date);
     expect(content).toEqual(payload.content);
+    expect(replies).toEqual([]);
   });
 });
