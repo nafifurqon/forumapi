@@ -55,22 +55,22 @@ class CommentRepositoryPostgres extends CommentRepository {
     }
   }
 
-  async deleteComment(commentid) {
+  async deleteComment(commentId) {
     const updatedIsDelete = true;
-    const updatedContent = '**komentar telah dihapus**';
 
     const query = {
-      text: 'UPDATE comments SET is_delete = $1, content = $2 '
-      + 'WHERE id = $3',
-      values: [updatedIsDelete, updatedContent, commentid],
+      text: 'UPDATE comments SET is_delete = $1 WHERE id = $2',
+      values: [updatedIsDelete, commentId],
     };
 
-    const result = await this._pool.query(query);
+    await this._pool.query(query);
   }
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT c.id, u.username, c.created_at as date, c.content '
+      text: 'SELECT c.id, u.username, c.created_at as date, '
+      + "CASE WHEN c.is_delete THEN '**komentar telah dihapus**' ELSE c.content "
+      + 'END as content '
       + 'FROM comments as c '
       + 'LEFT JOIN users as u ON u.id = c.owner '
       + 'WHERE thread_id = $1 '

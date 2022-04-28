@@ -31,7 +31,9 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async getRepliesByCommentId(commentId) {
     const query = {
-      text: 'SELECT r.id, r.content, r.created_at as date, u.username '
+      text: 'SELECT r.id, r.created_at as date, u.username, '
+      + "CASE WHEN r.is_delete THEN '**balasan telah dihapus**' ELSE r.content "
+      + 'END as content '
       + 'FROM replies as r '
       + 'LEFT JOIN users as u ON u.id = r.owner '
       + 'WHERE r.comment_id = $1 '
@@ -76,15 +78,13 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async deleteReply(replyId) {
     const updatedIsDelete = true;
-    const updatedContent = '**balasan telah dihapus**';
 
     const query = {
-      text: 'UPDATE replies SET is_delete = $1, content = $2 '
-      + 'WHERE id = $3',
-      values: [updatedIsDelete, updatedContent, replyId],
+      text: 'UPDATE replies SET is_delete = $1 WHERE id = $2',
+      values: [updatedIsDelete, replyId],
     };
 
-    const result = await this._pool.query(query);
+    await this._pool.query(query);
   }
 }
 

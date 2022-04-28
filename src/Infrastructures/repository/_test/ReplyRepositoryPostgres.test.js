@@ -382,10 +382,7 @@ describe('ReplyRepositoryPostgrres', () => {
       const replyAfterDelete = repliesAfterDelete[0];
 
       expect(replyBeforeDelete.is_delete).toEqual(false);
-      expect(replyBeforeDelete.content).toEqual(newReply.content);
-
       expect(replyAfterDelete.is_delete).toEqual(expectedDeletedReply.is_delete);
-      expect(replyAfterDelete.content).toEqual(expectedDeletedReply.content);
     });
   });
 });
