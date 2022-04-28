@@ -16,7 +16,7 @@ describe('a DetailReply entities', () => {
   it('should throw error when payload not meet data type specification', () => {
     // Arrange
     const payload = {
-      id: 'reply-xNBtm9HPR-492AeiimpfN',
+      id: 12345,
       username: true,
       date: '2021-08-08T08:07:01.522Z',
       content: 12345,
