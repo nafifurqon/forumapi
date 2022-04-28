@@ -16,11 +16,11 @@ describe('a DetailComment entities', () => {
   it('should throw error when payload not meet data type specification', () => {
     // Arrange
     const payload = {
-      id: 'comment-_pby2_tmXV6bcvcdev8xk',
+      id: 12345,
       username: true,
-      date: '2021-08-08T07:22:33.555Z',
+      date: 123,
       content: 12345,
-      replies: [],
+      replies: 'balasan',
     };
 
     // Action & Assert

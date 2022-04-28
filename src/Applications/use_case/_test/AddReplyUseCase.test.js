@@ -24,12 +24,13 @@ describe('AddReplyUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingReplyRepository.addReply = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedAddedReply));
+    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
+    mockingReplyRepository.addReply = jest.fn(() => Promise.resolve({
+      id: 'reply-123',
+      content: 'Balasan',
+      owner: 'user-123',
+    }));
 
     const addReplyUseCase = new AddReplyUseCase({
       replyRepository: mockingReplyRepository,

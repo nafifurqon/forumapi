@@ -17,16 +17,12 @@ describe('DeleteReplyUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
     mockingReplyRepository.checkAvailabilityReply = jest.fn()
       .mockImplementation(() => Promise.reject(new Error('balasan tidak ditemukan di database')));
-    mockingReplyRepository.verifyReplyAccess = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingReplyRepository.deleteReply = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockingReplyRepository.verifyReplyAccess = jest.fn(() => Promise.resolve());
+    mockingReplyRepository.deleteReply = jest.fn(() => Promise.resolve());
 
     const deleteReplyUseCase = new DeleteReplyUseCase({
       replyRepository: mockingReplyRepository,
@@ -53,16 +49,11 @@ describe('DeleteReplyUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingReplyRepository.checkAvailabilityReply = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingReplyRepository.verifyReplyAccess = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingReplyRepository.deleteReply = jest.fn()
-      .mockImplementation(() => Promise.resolve());
+    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
+    mockingReplyRepository.checkAvailabilityReply = jest.fn(() => Promise.resolve());
+    mockingReplyRepository.verifyReplyAccess = jest.fn(() => Promise.resolve());
+    mockingReplyRepository.deleteReply = jest.fn(() => Promise.resolve());
 
     const deleteReplyUseCase = new DeleteReplyUseCase({
       replyRepository: mockingReplyRepository,

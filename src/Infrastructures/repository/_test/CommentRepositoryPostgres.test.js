@@ -151,10 +151,7 @@ describe('CommentRepositoryPostgres', () => {
       const commentAfterDelete = commentsAfterDelete[0];
 
       expect(commentBeforeDelete.is_delete).toEqual(false);
-      expect(commentBeforeDelete.content).toEqual(newComment.content);
-
       expect(commentAfterDelete.is_delete).toEqual(expectedDeletedComment.is_delete);
-      expect(commentAfterDelete.content).toEqual(expectedDeletedComment.content);
     });
   });
 
