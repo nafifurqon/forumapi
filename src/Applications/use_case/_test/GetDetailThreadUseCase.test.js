@@ -38,34 +38,30 @@ describe('GetDetailThreadUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn()
-      .mockImplementation(() => Promise.resolve());
-    mockingThreadRepository.getThreadById = jest.fn()
-      .mockImplementation(() => Promise.resolve({
-        id: 'thread-h_2FkLZhtgBKY2kh4CC02',
-        title: 'sebuah thread',
-        body: 'sebuah body thread',
-        date: '2021-08-08T07:19:09.775Z',
+    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
+    mockingThreadRepository.getThreadById = jest.fn(() => Promise.resolve({
+      id: 'thread-h_2FkLZhtgBKY2kh4CC02',
+      title: 'sebuah thread',
+      body: 'sebuah body thread',
+      date: '2021-08-08T07:19:09.775Z',
+      username: 'dicoding',
+    }));
+    mockingCommentRepository.getCommentsByThreadId = jest.fn(() => Promise.resolve([
+      {
+        id: 'comment-_pby2_tmXV6bcvcdev8xk',
         username: 'dicoding',
-      }));
-    mockingCommentRepository.getCommentsByThreadId = jest.fn()
-      .mockImplementation(() => Promise.resolve([
-        {
-          id: 'comment-_pby2_tmXV6bcvcdev8xk',
-          username: 'dicoding',
-          date: '2021-08-08T07:22:33.555Z',
-          content: 'sebuah comment',
-        },
-      ]));
-    mockingReplyRepository.getRepliesByCommentId = jest.fn()
-      .mockImplementation(() => Promise.resolve([
-        {
-          id: 'reply-xNBtm9HPR-492AeiimpfN',
-          content: 'sebuah balasan',
-          date: '2021-08-08T08:07:01.522Z',
-          username: 'dicoding',
-        },
-      ]));
+        date: '2021-08-08T07:22:33.555Z',
+        content: 'sebuah comment',
+      },
+    ]));
+    mockingReplyRepository.getRepliesByCommentId = jest.fn(() => Promise.resolve([
+      {
+        id: 'reply-xNBtm9HPR-492AeiimpfN',
+        content: 'sebuah balasan',
+        date: '2021-08-08T08:07:01.522Z',
+        username: 'dicoding',
+      },
+    ]));
 
     const getDetailThreadUseCase = new GetDetailThreadUseCase({
       threadRepository: mockingThreadRepository,
