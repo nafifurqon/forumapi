@@ -22,12 +22,19 @@ class GetDetailThreadUseCase {
     let comments = await this._commentRepository.getCommentsByThreadId(threadId);
 
     comments = await Promise.all(comments.map(async (comment) => {
-      const validatedComment = this._validateContent({ ...comment }, 'comment');
+      const validatedComment = { ...comment };
+
+      if (validatedComment.is_delete === true) {
+        validatedComment.content = '**komentar telah dihapus**';
+      }
 
       let replies = await this._replyRepository.getRepliesByCommentId(comment.id);
 
       replies = replies.map((reply) => {
-        const validatedReply = this._validateContent({ ...reply }, 'reply');
+        const validatedReply = { ...reply };
+        if (validatedReply.is_delete === true) {
+          validatedReply.content = '**balasan telah dihapus**';
+        }
 
         return new DetailReply(validatedReply);
       });
@@ -42,25 +49,6 @@ class GetDetailThreadUseCase {
       ...detailThread,
       comments: comments.map((comment) => new DetailComment(comment)),
     });
-  }
-
-  _validateContent(item, type = 'comment') {
-    const validatedItem = { ...item };
-
-    if (validatedItem.is_delete === true) {
-      validatedItem.content = this._changeDeletedContent(type);
-    }
-
-    return validatedItem;
-  }
-
-  _changeDeletedContent(type = 'comment') {
-    switch (type) {
-      case 'reply':
-        return '**balasan telah dihapus**';
-      default:
-        return '**komentar telah dihapus**';
-    }
   }
 }
 
