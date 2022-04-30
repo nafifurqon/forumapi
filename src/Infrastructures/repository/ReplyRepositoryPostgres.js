@@ -1,6 +1,5 @@
 const ReplyRepository = require('../../Domains/replies/ReplyRepository');
 const AddedReply = require('../../Domains/replies/entities/AddedReply');
-const DetailReply = require('../../Domains/replies/entities/DetailReply');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 
@@ -31,9 +30,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async getRepliesByCommentId(commentId) {
     const query = {
-      text: 'SELECT r.id, r.created_at as date, u.username, '
-      + "CASE WHEN r.is_delete THEN '**balasan telah dihapus**' ELSE r.content "
-      + 'END as content '
+      text: 'SELECT r.id, r.content, r.is_delete, r.created_at as date, u.username '
       + 'FROM replies as r '
       + 'LEFT JOIN users as u ON u.id = r.owner '
       + 'WHERE r.comment_id = $1 '
@@ -47,7 +44,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       return [];
     }
 
-    return result.rows.map((row) => new DetailReply(row));
+    return result.rows;
   }
 
   async checkAvailabilityReply(replyId) {

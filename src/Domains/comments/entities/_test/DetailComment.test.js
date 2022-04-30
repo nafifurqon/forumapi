@@ -34,6 +34,7 @@ describe('a DetailComment entities', () => {
       username: 'johndoe',
       date: '2021-08-08T07:22:33.555Z',
       content: 'sebuah comment',
+      replies: [],
     };
 
     // Action

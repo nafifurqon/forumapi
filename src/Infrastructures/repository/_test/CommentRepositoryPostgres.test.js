@@ -118,7 +118,7 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('deleteComment function', () => {
-    it('should update is_delete and content from comment in database', async () => {
+    it('should update is_delete from comment in database', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
       const newComment = {
@@ -130,7 +130,7 @@ describe('CommentRepositoryPostgres', () => {
 
       const expectedDeletedComment = {
         id: newComment.id,
-        content: '**komentar telah dihapus**',
+        content: newComment.content,
         is_delete: true,
       };
 
@@ -204,6 +204,8 @@ describe('CommentRepositoryPostgres', () => {
         username: user.username,
         date: comment.date,
         content: comment.content,
+        is_delete: false,
+        replies: [],
       };
 
       await UsersTableTestHelper.addUser({ ...user });
@@ -215,10 +217,10 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       expect(comments).toHaveLength(1);
-      expect(comments[0]).toStrictEqual(new DetailComment({ ...expectedDetailComment }));
+      expect(comments[0]).toStrictEqual(expectedDetailComment);
     });
 
-    it('should return array or list of comments correctly and content = "komentar telah dihapus" '
+    it('should return array or list of comments correctly and is_delete = true '
       + 'when comment was deleted.', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
@@ -250,7 +252,9 @@ describe('CommentRepositoryPostgres', () => {
         id: 'comment-123',
         username: user.username,
         date: now,
-        content: '**komentar telah dihapus**',
+        content: comment.content,
+        is_delete: true,
+        replies: [],
       };
 
       await UsersTableTestHelper.addUser({ ...user });
@@ -263,7 +267,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Assert
       expect(comments).toHaveLength(1);
-      expect(comments[0]).toStrictEqual(new DetailComment({ ...expectedDeletedComment }));
+      expect(comments[0]).toStrictEqual(expectedDeletedComment);
     });
 
     it('should return array or list of comments sorted form most past', async () => {
