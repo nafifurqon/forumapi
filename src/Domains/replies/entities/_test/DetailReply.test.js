@@ -20,6 +20,7 @@ describe('a DetailReply entities', () => {
       username: true,
       date: '2021-08-08T08:07:01.522Z',
       content: 12345,
+      is_delete: 'test',
     };
 
     // Action & Assert
@@ -33,6 +34,7 @@ describe('a DetailReply entities', () => {
       content: 'sebuah balasan',
       date: '2021-08-08T08:07:01.522Z',
       username: 'dicoding',
+      is_delete: false,
     };
 
     // Action
@@ -45,5 +47,22 @@ describe('a DetailReply entities', () => {
     expect(username).toEqual(payload.username);
     expect(date).toEqual(payload.date);
     expect(content).toEqual(payload.content);
+  });
+
+  it('should set content as "**balasan telah dihapus**" when is_delete is true', () => {
+    // Arrange
+    const payload = {
+      id: 'reply-xNBtm9HPR-492AeiimpfN',
+      content: 'sebuah balasan',
+      date: '2021-08-08T08:07:01.522Z',
+      username: 'dicoding',
+      is_delete: true,
+    };
+
+    // Action
+    const { content } = new DetailReply(payload);
+
+    // Assert
+    expect(content).toEqual('**balasan telah dihapus**');
   });
 });

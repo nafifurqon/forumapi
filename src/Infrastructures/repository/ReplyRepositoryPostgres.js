@@ -15,17 +15,15 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     const id = `reply-${this._idGenerator()}`;
     const isDelete = false;
     const now = new Date().toISOString();
-    const createdAt = now;
-    const updatedAt = now;
 
     const query = {
-      text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id, content, owner',
-      values: [id, content, commentId, owner, isDelete, createdAt, updatedAt],
+      text: 'INSERT INTO replies VALUES($1, $2, $3, $4, $5, $6, $6) RETURNING id, content, owner',
+      values: [id, content, commentId, owner, isDelete, now],
     };
 
     const result = await this._pool.query(query);
 
-    return new AddedReply({ ...result.rows[0] });
+    return new AddedReply(result.rows[0]);
   }
 
   async getRepliesByCommentId(commentId) {

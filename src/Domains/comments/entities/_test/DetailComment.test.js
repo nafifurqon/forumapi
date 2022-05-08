@@ -7,6 +7,7 @@ describe('a DetailComment entities', () => {
       id: 'comment-_pby2_tmXV6bcvcdev8xk',
       username: 'johndoe',
       date: '2021-08-08T07:22:33.555Z',
+      content: 'komentar',
     };
 
     // Action & Assert
@@ -20,6 +21,7 @@ describe('a DetailComment entities', () => {
       username: true,
       date: 123,
       content: 12345,
+      is_delete: 'test',
       replies: 'balasan',
     };
 
@@ -34,6 +36,7 @@ describe('a DetailComment entities', () => {
       username: 'johndoe',
       date: '2021-08-08T07:22:33.555Z',
       content: 'sebuah comment',
+      is_delete: false,
       replies: [],
     };
 
@@ -48,5 +51,23 @@ describe('a DetailComment entities', () => {
     expect(date).toEqual(payload.date);
     expect(content).toEqual(payload.content);
     expect(replies).toEqual([]);
+  });
+
+  it('should set content as "**komentar telah dihapus**" when is_delete is true', () => {
+    // Arrange
+    const payload = {
+      id: 'comment-_pby2_tmXV6bcvcdev8xk',
+      username: 'johndoe',
+      date: '2021-08-08T07:22:33.555Z',
+      content: 'sebuah comment',
+      is_delete: true,
+      replies: [],
+    };
+
+    // Action
+    const { content } = new DetailComment(payload);
+
+    // Assert
+    expect(content).toEqual('**komentar telah dihapus**');
   });
 });
