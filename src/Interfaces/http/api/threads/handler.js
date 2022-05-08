@@ -18,14 +18,12 @@ class ThreadsHandler {
       title, body, owner,
     });
 
-    const response = h.response({
+    return h.response({
       status: 'success',
       data: {
         addedThread,
       },
-    });
-    response.code(201);
-    return response;
+    }).code(201);
   }
 
   async getDetailThreadHandler(request) {

@@ -19,14 +19,12 @@ class RepliesHandler {
       content, threadId, commentId, owner,
     });
 
-    const response = h.response({
+    return h.response({
       status: 'success',
       data: {
         addedReply,
       },
-    });
-    response.code(201);
-    return response;
+    }).code(201);
   }
 
   async deleteReplyHandler(request) {
