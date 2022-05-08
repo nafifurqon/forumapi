@@ -3,13 +3,13 @@ class DetailReply {
     this._verifyPayload(payload);
 
     const {
-      id, username, date, content,
+      id, username, date, content, is_delete: isDelete,
     } = payload;
 
     this.id = id;
     this.username = username;
     this.date = date;
-    this.content = content;
+    this.content = isDelete ? '**balasan telah dihapus**' : content;
   }
 
   _verifyPayload(payload) {
