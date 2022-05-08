@@ -11,7 +11,7 @@ class DetailThread {
     this.body = body;
     this.date = date;
     this.username = username;
-    this.comments = comments || [];
+    this.comments = comments;
   }
 
   _verifyPayload(payload) {

@@ -108,6 +108,7 @@ describe('ReplyRepositoryPostgrres', () => {
         username: user.username,
         date: reply.date,
         content: reply.content,
+        is_delete: false,
       };
 
       await UsersTableTestHelper.addUser({ ...user });
@@ -120,7 +121,7 @@ describe('ReplyRepositoryPostgrres', () => {
 
       // Assert
       expect(replies).toHaveLength(1);
-      expect(replies[0]).toStrictEqual(new DetailReply({ ...expectedDetailReply }));
+      expect(replies[0]).toStrictEqual(expectedDetailReply);
     });
 
     it('should return array or list of replies sorted form most past', async () => {
@@ -195,7 +196,7 @@ describe('ReplyRepositoryPostgrres', () => {
       expect(firstReplyDate.getTime()).toBeLessThan(secondReplyDate.getTime());
     });
 
-    it('should return array or list of replies correctly and content = "balasan telah dihapus" '
+    it('should return array or list of replies correctly and is_delete = true '
       + 'when reply was deleted.', async () => {
       // Arrange
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
@@ -235,7 +236,8 @@ describe('ReplyRepositoryPostgrres', () => {
         id: reply.id,
         username: user.username,
         date: reply.date,
-        content: '**balasan telah dihapus**',
+        content: reply.content,
+        is_delete: true,
       };
 
       await UsersTableTestHelper.addUser({ ...user });
@@ -249,7 +251,7 @@ describe('ReplyRepositoryPostgrres', () => {
 
       // Assert
       expect(replies).toHaveLength(1);
-      expect(replies[0]).toStrictEqual(new DetailReply({ ...expectedDetailReply }));
+      expect(replies[0]).toStrictEqual(expectedDetailReply);
     });
   });
 
@@ -336,7 +338,7 @@ describe('ReplyRepositoryPostgrres', () => {
   });
 
   describe('deleteReply function', () => {
-    it('should update is_delete and content from comment in database', async () => {
+    it('should update is_delete from comment in database', async () => {
       // Arrange
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
 
@@ -360,7 +362,7 @@ describe('ReplyRepositoryPostgrres', () => {
 
       const expectedDeletedReply = {
         id: newReply.id,
-        content: '**balasan telah dihapus**',
+        content: newReply.content,
         is_delete: true,
       };
 

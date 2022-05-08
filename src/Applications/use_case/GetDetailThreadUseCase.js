@@ -1,4 +1,5 @@
 const DetailComment = require('../../Domains/comments/entities/DetailComment');
+const DetailReply = require('../../Domains/replies/entities/DetailReply');
 const DetailThread = require('../../Domains/threads/entities/DetailThread');
 
 class GetDetailThreadUseCase {
@@ -21,10 +22,25 @@ class GetDetailThreadUseCase {
     let comments = await this._commentRepository.getCommentsByThreadId(threadId);
 
     comments = await Promise.all(comments.map(async (comment) => {
-      const replies = await this._replyRepository.getRepliesByCommentId(comment.id);
+      const validatedComment = { ...comment };
+
+      if (validatedComment.is_delete === true) {
+        validatedComment.content = '**komentar telah dihapus**';
+      }
+
+      let replies = await this._replyRepository.getRepliesByCommentId(comment.id);
+
+      replies = replies.map((reply) => {
+        const validatedReply = { ...reply };
+        if (validatedReply.is_delete === true) {
+          validatedReply.content = '**balasan telah dihapus**';
+        }
+
+        return new DetailReply(validatedReply);
+      });
 
       return {
-        ...comment,
+        ...validatedComment,
         replies,
       };
     }));

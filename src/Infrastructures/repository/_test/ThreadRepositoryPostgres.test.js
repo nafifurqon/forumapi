@@ -94,6 +94,7 @@ describe('ThreadRepositoryPostgres', () => {
         body: thread.body,
         date: thread.date,
         username: user.username,
+        comments: [],
       };
 
       // add user
