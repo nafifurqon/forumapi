@@ -10,7 +10,7 @@ class DetailComment {
     this.username = username;
     this.date = date;
     this.content = content;
-    this.replies = replies || [];
+    this.replies = replies;
   }
 
   _verifyPayload(payload) {

@@ -2,7 +2,6 @@ const AuthorizationError = require('../../Commons/exceptions/AuthorizationError'
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
-const DetailComment = require('../../Domains/comments/entities/DetailComment');
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -68,9 +67,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async getCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT c.id, u.username, c.created_at as date, '
-      + "CASE WHEN c.is_delete THEN '**komentar telah dihapus**' ELSE c.content "
-      + 'END as content '
+      text: 'SELECT c.id, u.username, c.created_at as date, c.content, c.is_delete '
       + 'FROM comments as c '
       + 'LEFT JOIN users as u ON u.id = c.owner '
       + 'WHERE thread_id = $1 '
@@ -84,7 +81,7 @@ class CommentRepositoryPostgres extends CommentRepository {
       return [];
     }
 
-    return result.rows.map((row) => new DetailComment(row));
+    return result.rows.map((row) => ({ ...row, replies: [] }));
   }
 }
 
