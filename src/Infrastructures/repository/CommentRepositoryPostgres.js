@@ -75,10 +75,6 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    if (!result.rowCount) {
-      return [];
-    }
-
     return result.rows.map((row) => ({ ...row, replies: [] }));
   }
 }
