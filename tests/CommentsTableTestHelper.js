@@ -11,12 +11,10 @@ const CommentsTableTestHelper = {
   }) {
     const isDelete = false;
     const now = date || new Date().toISOString();
-    const createdAt = now;
-    const updatedAt = now;
 
     const query = {
-      text: 'INSERT INTO comments VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id, content, owner',
-      values: [id, content, threadId, owner, isDelete, createdAt, updatedAt],
+      text: 'INSERT INTO comments VALUES($1, $2, $3, $4, $5, $6, $6) RETURNING id, content, owner',
+      values: [id, content, threadId, owner, isDelete, now],
     };
 
     await pool.query(query);
