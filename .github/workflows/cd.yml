@@ -18,7 +18,6 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          sudo tail -f /var/log/auth.log
           cd ~/forumapi
           git pull origin main
           npm install
