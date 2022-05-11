@@ -254,27 +254,6 @@ container.register([
     },
   },
   {
-    key: LikeOrDislikeCommentUseCase.name,
-    Class: LikeOrDislikeCommentUseCase,
-    parameter: {
-      injectType: 'destructuring',
-      dependencies: [
-        {
-          name: 'commentRepository',
-          internal: CommentRepository.name,
-        },
-        {
-          name: 'threadRepository',
-          internal: ThreadRepository.name,
-        },
-        {
-          name: 'commentLikeRepository',
-          internal: CommentLikeRepository.name,
-        },
-      ],
-    },
-  },
-  {
     key: DeleteCommentUseCase.name,
     Class: DeleteCommentUseCase,
     parameter: {
@@ -350,6 +329,27 @@ container.register([
         {
           name: 'threadRepository',
           internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: LikeOrDislikeCommentUseCase.name,
+    Class: LikeOrDislikeCommentUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'commentRepository',
+          internal: CommentRepository.name,
+        },
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+        {
+          name: 'commentLikeRepository',
+          internal: CommentLikeRepository.name,
         },
       ],
     },
