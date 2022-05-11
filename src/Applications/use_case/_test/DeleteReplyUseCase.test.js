@@ -9,7 +9,7 @@ describe('DeleteReplyUseCase', () => {
     const useCasePayload = {
       threadId: 'thread-123',
       commentId: 'comment-123',
-      replyId: 'not-found-reply-id',
+      replyId: 'reply-123',
       owner: 'user-123',
     };
 

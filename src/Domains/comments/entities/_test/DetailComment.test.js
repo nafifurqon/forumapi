@@ -22,6 +22,7 @@ describe('a DetailComment entities', () => {
       date: 123,
       content: 12345,
       is_delete: 'test',
+      like_count: 'dua',
       replies: 'balasan',
     };
 
@@ -37,12 +38,13 @@ describe('a DetailComment entities', () => {
       date: '2021-08-08T07:22:33.555Z',
       content: 'sebuah comment',
       is_delete: false,
+      like_count: 2,
       replies: [],
     };
 
     // Action
     const {
-      id, username, date, content, replies,
+      id, username, date, content, likeCount, replies,
     } = new DetailComment(payload);
 
     // Assert
@@ -50,6 +52,7 @@ describe('a DetailComment entities', () => {
     expect(username).toEqual(payload.username);
     expect(date).toEqual(payload.date);
     expect(content).toEqual(payload.content);
+    expect(likeCount).toEqual(payload.like_count);
     expect(replies).toEqual([]);
   });
 
