@@ -1,17 +1,18 @@
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
+const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
-const DetailComment = require('../../../Domains/comments/entities/DetailComment');
 
 describe('CommentRepositoryPostgres', () => {
   afterEach(async () => {
     await UsersTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
+    await CommentLikesTableTestHelper.cleanTable();
   });
 
   afterAll(async () => {
@@ -199,18 +200,27 @@ describe('CommentRepositoryPostgres', () => {
         owner: user.id,
       };
 
+      const commentLike = {
+        id: 'comment_likes-123',
+        commentId: comment.id,
+        owner: user.id,
+        date: now,
+      };
+
       const expectedDetailComment = {
         id: 'comment-123',
         username: user.username,
         date: comment.date,
         content: comment.content,
         is_delete: false,
+        like_count: 1,
         replies: [],
       };
 
       await UsersTableTestHelper.addUser({ ...user });
       await ThreadsTableTestHelper.addThread({ ...thread });
       await CommentsTableTestHelper.addComment({ ...comment });
+      await CommentLikesTableTestHelper.addCommentLike({ ...commentLike });
 
       // Action
       const comments = await commentRepositoryPostgres.getCommentsByThreadId(thread.id);
@@ -254,6 +264,7 @@ describe('CommentRepositoryPostgres', () => {
         date: now,
         content: comment.content,
         is_delete: true,
+        like_count: 0,
         replies: [],
       };
 

@@ -35,6 +35,9 @@ const ReplyRepository = require('../Domains/replies/ReplyRepository');
 const ReplyRepositoryPostgres = require('./repository/ReplyRepositoryPostgres');
 const AddReplyUseCase = require('../Applications/use_case/AddReplyUseCase');
 const DeleteReplyUseCase = require('../Applications/use_case/DeleteReplyUseCase');
+const CommentLikeRepository = require('../Domains/comment_likes/CommentLikeRepository');
+const CommentLikeRepositoryPostgres = require('./repository/CommentLikeRepositoryPostgres');
+const LikeOrDislikeCommentUseCase = require('../Applications/use_case/LikeOrDislikeCommentUseCase');
 
 // creating container
 const container = createContainer();
@@ -97,6 +100,20 @@ container.register([
   {
     key: ReplyRepository.name,
     Class: ReplyRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
+    key: CommentLikeRepository.name,
+    Class: CommentLikeRepositoryPostgres,
     parameter: {
       dependencies: [
         {
@@ -312,6 +329,27 @@ container.register([
         {
           name: 'threadRepository',
           internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: LikeOrDislikeCommentUseCase.name,
+    Class: LikeOrDislikeCommentUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'commentRepository',
+          internal: CommentRepository.name,
+        },
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+        {
+          name: 'commentLikeRepository',
+          internal: CommentLikeRepository.name,
         },
       ],
     },

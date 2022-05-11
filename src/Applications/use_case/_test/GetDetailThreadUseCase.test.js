@@ -22,6 +22,7 @@ describe('GetDetailThreadUseCase', () => {
           username: 'dicoding',
           date: '2021-08-08T07:22:33.555Z',
           content: 'sebuah comment',
+          likeCount: 1,
           replies: [
             {
               id: 'reply-xNBtm9HPR-492AeiimpfN',
@@ -53,6 +54,7 @@ describe('GetDetailThreadUseCase', () => {
         date: '2021-08-08T07:22:33.555Z',
         content: 'sebuah comment',
         is_delete: false,
+        like_count: 1,
       },
     ]));
     mockingReplyRepository.getRepliesByCommentId = jest.fn(() => Promise.resolve([
