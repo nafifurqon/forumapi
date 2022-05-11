@@ -84,6 +84,25 @@ describe('/threads/{threadId}/comments/{commentId}/likes endpoint', () => {
   });
 
   describe('when PUT /threads/{threadId}/comments/{commentId}/likes', () => {
+    it('should response 401 when request with invalid authorization token', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+        headers: {
+          Authorization: 'invalid-access-token',
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toBeDefined();
+      expect(responseJson.message).toEqual('Missing authentication');
+    });
+
     it('should response 404 when thread is not found', async () => {
       // Arrange
       const server = await createServer(container);
@@ -103,23 +122,84 @@ describe('/threads/{threadId}/comments/{commentId}/likes endpoint', () => {
       expect(responseJson.message).toEqual('thread tidak ditemukan di database');
     });
 
-    // it('should response 200 when like a comment', async () => {
-    //   // Arrange
-    //   const server = await createServer(container);
+    it('should response 404 when comment is not found', async () => {
+      // Arrange
+      const server = await createServer(container);
 
-    //   // Action
-    //   const response = await server.inject({
-    //     method: 'PUT',
-    //     url: `/threads/${threadId}/comments/${commentId}/likes`,
-    //     headers: {
-    //       Authorization: `Bearer ${globalUserAccessToken}`,
-    //     },
-    //   });
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/not-found-comment-id/likes`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
 
-    //   // Assert
-    //   const responseJson = JSON.parse(response.payload);
-    //   expect(responseJson.statusCode).toEqual(200);
-    //   expect(responseJson.status).toEqual('success');
-    // });
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.message).toBeDefined();
+      expect(responseJson.message).toEqual('komentar tidak ditemukan di database');
+    });
+
+    it('should response 200 when like the user\'s comment', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${globalUserAccessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+
+    it('should response 200 when like other user\'s comment', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // add another user
+      await server.inject({
+        method: 'POST',
+        url: '/users',
+        payload: {
+          username: 'anotheruser',
+          password: 'secret',
+          fullname: 'Another User',
+        },
+      });
+
+      // login another user
+      const loginResponse = await server.inject({
+        method: 'POST',
+        url: '/authentications',
+        payload: {
+          username: 'anotheruser',
+          password: 'secret',
+        },
+      });
+      const { data } = JSON.parse(loginResponse.payload);
+      const anotherUserToken = data.accessToken;
+
+      // Action
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/threads/${threadId}/comments/${commentId}/likes`,
+        headers: {
+          Authorization: `Bearer ${anotherUserToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
   });
 });
