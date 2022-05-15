@@ -46,14 +46,14 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  describe('checkAvailabilityComment function', () => {
+  describe('checkCommentAvailability function', () => {
     it('should throw NotFoundError when comment not available', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
       const commentId = 'not-found-comment-id';
 
       // Action & Assert
-      expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
+      expect(commentRepositoryPostgres.checkCommentAvailability(commentId))
         .rejects.toThrow(NotFoundError);
     });
 
@@ -71,7 +71,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       // Action & Assert
-      expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
+      expect(commentRepositoryPostgres.checkCommentAvailability(commentId))
         .resolves.not.toThrow(NotFoundError);
     });
   });

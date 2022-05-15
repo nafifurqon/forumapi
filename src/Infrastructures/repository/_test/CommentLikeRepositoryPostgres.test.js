@@ -17,7 +17,7 @@ describe('CommentRepositoryPostgres', () => {
     await pool.end();
   });
 
-  describe('checkAvailabilityCommentLike function', () => {
+  describe('checkCommentAvailabilityLike function', () => {
     it('should return false when comment like not available', async () => {
       // Arrange
       const commentLikeRepositoryPostgres = new CommentLikeRepositoryPostgres(pool);
@@ -26,7 +26,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action
       const commentLikeAvailable = await commentLikeRepositoryPostgres
-        .checkAvailabilityCommentLike({
+        .checkCommentAvailabilityLike({
           commentId, owner,
         });
 
@@ -53,7 +53,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action
       const commentLikeAvailable = await commentLikeRepositoryPostgres
-        .checkAvailabilityCommentLike({
+        .checkCommentAvailabilityLike({
           commentId, owner,
         });
 

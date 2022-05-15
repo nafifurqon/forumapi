@@ -40,14 +40,14 @@ describe('ThreadRepositoryPostgres', () => {
     });
   });
 
-  describe('checkAvailabilityThread function', () => {
+  describe('checkThreadAvailability function', () => {
     it('should throw NotFoundError when thread not available', async () => {
       // Arrange
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool);
       const threadId = 'not-found-thread-id';
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.checkAvailabilityThread(threadId))
+      await expect(threadRepositoryPostgres.checkThreadAvailability(threadId))
         .rejects.toThrow(NotFoundError);
     });
 
@@ -63,7 +63,7 @@ describe('ThreadRepositoryPostgres', () => {
       await ThreadsTableTestHelper.addThread({ id: threadId, owner: userId });
 
       // Action & Assert
-      await expect(threadRepositoryPostgres.checkAvailabilityThread(threadId))
+      await expect(threadRepositoryPostgres.checkThreadAvailability(threadId))
         .resolves.not.toThrow(NotFoundError);
     });
   });

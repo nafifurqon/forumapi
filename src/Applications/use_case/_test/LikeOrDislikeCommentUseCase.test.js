@@ -16,9 +16,9 @@ describe('LikeOrDislikeUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingCommentLikeRepository = new CommentLikeRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
-    mockingCommentLikeRepository.checkAvailabilityCommentLike
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkCommentAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentLikeRepository.checkCommentAvailabilityLike
       = jest.fn(() => Promise.resolve(false));
     mockingCommentLikeRepository.addCommentLike = jest.fn(() => Promise.resolve({
       id: 'comment-like-123',
@@ -37,11 +37,11 @@ describe('LikeOrDislikeUseCase', () => {
     await likeOrDislikeCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
-    expect(mockingCommentRepository.checkAvailabilityComment)
+    expect(mockingCommentRepository.checkCommentAvailability)
       .toBeCalledWith(useCasePayload.commentId);
-    expect(mockingCommentLikeRepository.checkAvailabilityCommentLike)
+    expect(mockingCommentLikeRepository.checkCommentAvailabilityLike)
       .toBeCalledWith({
         commentId: useCasePayload.commentId,
         owner: useCasePayload.owner,
@@ -67,9 +67,9 @@ describe('LikeOrDislikeUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingCommentLikeRepository = new CommentLikeRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
-    mockingCommentLikeRepository.checkAvailabilityCommentLike
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkCommentAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentLikeRepository.checkCommentAvailabilityLike
       = jest.fn(() => Promise.resolve(true));
     mockingCommentLikeRepository.addCommentLike = jest.fn(() => Promise.resolve({
       id: 'comment-like-123',
@@ -88,11 +88,11 @@ describe('LikeOrDislikeUseCase', () => {
     await likeOrDislikeCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
-    expect(mockingCommentRepository.checkAvailabilityComment)
+    expect(mockingCommentRepository.checkCommentAvailability)
       .toBeCalledWith(useCasePayload.commentId);
-    expect(mockingCommentLikeRepository.checkAvailabilityCommentLike)
+    expect(mockingCommentLikeRepository.checkCommentAvailabilityLike)
       .toBeCalledWith({
         commentId: useCasePayload.commentId,
         owner: useCasePayload.owner,

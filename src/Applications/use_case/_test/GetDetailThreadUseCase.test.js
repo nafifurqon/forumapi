@@ -39,7 +39,7 @@ describe('GetDetailThreadUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
     mockingThreadRepository.getThreadById = jest.fn(() => Promise.resolve({
       id: 'thread-h_2FkLZhtgBKY2kh4CC02',
       title: 'sebuah thread',
@@ -78,7 +78,7 @@ describe('GetDetailThreadUseCase', () => {
 
     // Assert
     expect(detailThread).toEqual(expectedDetailThread);
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
     expect(mockingThreadRepository.getThreadById)
       .toBeCalledWith(useCasePayload.threadId);
@@ -122,7 +122,7 @@ describe('GetDetailThreadUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
     mockingThreadRepository.getThreadById = jest.fn(() => Promise.resolve({
       id: 'thread-h_2FkLZhtgBKY2kh4CC02',
       title: 'sebuah thread',
@@ -162,7 +162,7 @@ describe('GetDetailThreadUseCase', () => {
 
     // Assert
     expect(detailThread).toEqual(expectedDetailThread);
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
     expect(mockingThreadRepository.getThreadById)
       .toBeCalledWith(useCasePayload.threadId);

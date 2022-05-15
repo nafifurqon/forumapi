@@ -12,10 +12,10 @@ class LikeOrDislikeCommentUseCase {
   async execute(useCasePayload) {
     const { commentId, threadId, owner } = useCasePayload;
 
-    await this._threadRepository.checkAvailabilityThread(threadId);
-    await this._commentRepository.checkAvailabilityComment(commentId);
+    await this._threadRepository.checkThreadAvailability(threadId);
+    await this._commentRepository.checkCommentAvailability(commentId);
 
-    const commentLikeAvailable = await this._commentLikeRepository.checkAvailabilityCommentLike({
+    const commentLikeAvailable = await this._commentLikeRepository.checkCommentAvailabilityLike({
       commentId, owner,
     });
 

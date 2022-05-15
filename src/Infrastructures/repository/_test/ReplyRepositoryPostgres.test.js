@@ -255,14 +255,14 @@ describe('ReplyRepositoryPostgrres', () => {
     });
   });
 
-  describe('checkAvailabilityReply function', () => {
+  describe('checkReplyAvailability function', () => {
     it('should throw NotFoundError when reply not available', async () => {
       // Arrange
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
       const replyId = 'not-found-reply-id';
 
       // Action & Assert
-      expect(replyRepositoryPostgres.checkAvailabilityReply(replyId))
+      expect(replyRepositoryPostgres.checkReplyAvailability(replyId))
         .rejects.toThrow(NotFoundError);
     });
 
@@ -284,7 +284,7 @@ describe('ReplyRepositoryPostgrres', () => {
       });
 
       // Action & Assert
-      expect(replyRepositoryPostgres.checkAvailabilityReply(replyId))
+      expect(replyRepositoryPostgres.checkReplyAvailability(replyId))
         .resolves.not.toThrow(NotFoundError);
     });
   });
