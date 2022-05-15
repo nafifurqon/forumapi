@@ -14,10 +14,10 @@ class DeleteReplyUseCase {
       threadId, commentId, replyId, owner,
     } = useCasePayload;
 
-    await this._threadRepository.checkAvailabilityThread(threadId);
-    await this._commentRepository.checkAvailabilityComment(commentId);
+    await this._threadRepository.checkThreadAvailability(threadId);
+    await this._commentRepository.checkCommentAvailability(commentId);
 
-    await this._replyRepository.checkAvailabilityReply(replyId);
+    await this._replyRepository.checkReplyAvailability(replyId);
     await this._replyRepository.verifyReplyAccess({ replyId, owner });
     await this._replyRepository.deleteReply(replyId);
   }

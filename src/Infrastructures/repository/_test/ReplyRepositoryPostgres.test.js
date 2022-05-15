@@ -1,10 +1,9 @@
-const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/database/CommentsTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/database/UsersTableTestHelper');
+const RepliesTableTestHelper = require('../../../../tests/database/RepliesTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const ReplyRepositoryPostgres = require('../ReplyRepositoryPostgres');
-const DetailReply = require('../../../Domains/replies/entities/DetailReply');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 
@@ -255,14 +254,14 @@ describe('ReplyRepositoryPostgrres', () => {
     });
   });
 
-  describe('checkAvailabilityReply function', () => {
+  describe('checkReplyAvailability function', () => {
     it('should throw NotFoundError when reply not available', async () => {
       // Arrange
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool);
       const replyId = 'not-found-reply-id';
 
       // Action & Assert
-      expect(replyRepositoryPostgres.checkAvailabilityReply(replyId))
+      expect(replyRepositoryPostgres.checkReplyAvailability(replyId))
         .rejects.toThrow(NotFoundError);
     });
 
@@ -284,7 +283,7 @@ describe('ReplyRepositoryPostgrres', () => {
       });
 
       // Action & Assert
-      expect(replyRepositoryPostgres.checkAvailabilityReply(replyId))
+      expect(replyRepositoryPostgres.checkReplyAvailability(replyId))
         .resolves.not.toThrow(NotFoundError);
     });
   });

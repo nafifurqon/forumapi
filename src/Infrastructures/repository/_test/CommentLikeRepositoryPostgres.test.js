@@ -1,7 +1,7 @@
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
-const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/database/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/database/CommentsTableTestHelper');
+const CommentLikesTableTestHelper = require('../../../../tests/database/CommentLikesTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const CommentLikeRepositoryPostgres = require('../CommentLikeRepositoryPostgres');
 
@@ -17,7 +17,7 @@ describe('CommentRepositoryPostgres', () => {
     await pool.end();
   });
 
-  describe('checkAvailabilityCommentLike function', () => {
+  describe('checkCommentAvailabilityLike function', () => {
     it('should return false when comment like not available', async () => {
       // Arrange
       const commentLikeRepositoryPostgres = new CommentLikeRepositoryPostgres(pool);
@@ -26,7 +26,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action
       const commentLikeAvailable = await commentLikeRepositoryPostgres
-        .checkAvailabilityCommentLike({
+        .checkCommentAvailabilityLike({
           commentId, owner,
         });
 
@@ -53,7 +53,7 @@ describe('CommentRepositoryPostgres', () => {
 
       // Action
       const commentLikeAvailable = await commentLikeRepositoryPostgres
-        .checkAvailabilityCommentLike({
+        .checkCommentAvailabilityLike({
           commentId, owner,
         });
 

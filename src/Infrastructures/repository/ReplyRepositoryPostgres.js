@@ -45,7 +45,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     return result.rows;
   }
 
-  async checkAvailabilityReply(replyId) {
+  async checkReplyAvailability(replyId) {
     const query = {
       text: 'SELECT id FROM replies WHERE id = $1',
       values: [replyId],

@@ -16,7 +16,7 @@ class GetDetailThreadUseCase {
   async execute(useCasePayload) {
     const { threadId } = useCasePayload;
 
-    await this._threadRepository.checkAvailabilityThread(threadId);
+    await this._threadRepository.checkThreadAvailability(threadId);
 
     const detailThread = await this._threadRepository.getThreadById(threadId);
     let comments = await this._commentRepository.getCommentsByThreadId(threadId);

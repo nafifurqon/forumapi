@@ -24,8 +24,8 @@ describe('AddReplyUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkCommentAvailability = jest.fn(() => Promise.resolve());
     mockingReplyRepository.addReply = jest.fn(() => Promise.resolve({
       id: 'reply-123',
       content: 'Balasan',
@@ -43,9 +43,9 @@ describe('AddReplyUseCase', () => {
 
     // Assert
     expect(addedReply).toStrictEqual(expectedAddedReply);
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
-    expect(mockingCommentRepository.checkAvailabilityComment)
+    expect(mockingCommentRepository.checkCommentAvailability)
       .toBeCalledWith(useCasePayload.commentId);
     expect(mockingReplyRepository.addReply).toBeCalledWith(new NewReply({
       content: useCasePayload.content,

@@ -7,7 +7,7 @@ class CommentLikeRepositoryPostgres extends CommentLikeRepository {
     this._idGenerator = idGenerator;
   }
 
-  async checkAvailabilityCommentLike({ commentId, owner }) {
+  async checkCommentAvailabilityLike({ commentId, owner }) {
     const query = {
       text: 'SELECT comment_id, owner FROM comment_likes WHERE comment_id = $1 AND owner = $2',
       values: [commentId, owner],

@@ -17,9 +17,9 @@ describe('DeleteReplyUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingReplyRepository = new ReplyRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
-    mockingReplyRepository.checkAvailabilityReply = jest.fn(() => Promise.resolve());
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkCommentAvailability = jest.fn(() => Promise.resolve());
+    mockingReplyRepository.checkReplyAvailability = jest.fn(() => Promise.resolve());
     mockingReplyRepository.verifyReplyAccess = jest.fn(() => Promise.resolve());
     mockingReplyRepository.deleteReply = jest.fn(() => Promise.resolve());
 
@@ -32,11 +32,11 @@ describe('DeleteReplyUseCase', () => {
     await deleteReplyUseCase.execute(useCasePayload);
 
     // Assert
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
-    expect(mockingCommentRepository.checkAvailabilityComment)
+    expect(mockingCommentRepository.checkCommentAvailability)
       .toBeCalledWith(useCasePayload.commentId);
-    expect(mockingReplyRepository.checkAvailabilityReply)
+    expect(mockingReplyRepository.checkReplyAvailability)
       .toBeCalledWith(useCasePayload.replyId);
     expect(mockingReplyRepository.verifyReplyAccess)
       .toBeCalledWith({

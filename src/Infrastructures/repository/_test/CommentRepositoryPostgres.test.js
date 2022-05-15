@@ -1,7 +1,7 @@
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
-const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/database/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/database/CommentsTableTestHelper');
+const CommentLikesTableTestHelper = require('../../../../tests/database/CommentLikesTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const CommentRepositoryPostgres = require('../CommentRepositoryPostgres');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
@@ -46,14 +46,14 @@ describe('CommentRepositoryPostgres', () => {
     });
   });
 
-  describe('checkAvailabilityComment function', () => {
+  describe('checkCommentAvailability function', () => {
     it('should throw NotFoundError when comment not available', async () => {
       // Arrange
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool);
       const commentId = 'not-found-comment-id';
 
       // Action & Assert
-      expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
+      expect(commentRepositoryPostgres.checkCommentAvailability(commentId))
         .rejects.toThrow(NotFoundError);
     });
 
@@ -71,7 +71,7 @@ describe('CommentRepositoryPostgres', () => {
       });
 
       // Action & Assert
-      expect(commentRepositoryPostgres.checkAvailabilityComment(commentId))
+      expect(commentRepositoryPostgres.checkCommentAvailability(commentId))
         .resolves.not.toThrow(NotFoundError);
     });
   });

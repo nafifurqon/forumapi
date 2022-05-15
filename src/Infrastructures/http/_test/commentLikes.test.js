@@ -1,11 +1,12 @@
 const pool = require('../../database/postgres/pool');
-const AuthenticationsTableTestHelper = require('../../../../tests/AuthenticationsTableTestHelper');
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
-const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper');
+const AuthenticationsTableTestHelper = require('../../../../tests/database/AuthenticationsTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/database/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/database/CommentsTableTestHelper');
+const CommentLikesTableTestHelper = require('../../../../tests/database/AuthenticationsTableTestHelper');
 const createServer = require('../createServer');
 const container = require('../../container');
+const UserAPITestHelper = require('../../../../tests/http/UserAPITestHelper');
 
 describe('/threads/{threadId}/comments/{commentId}/likes endpoint', () => {
   afterAll(async () => {
@@ -20,67 +21,48 @@ describe('/threads/{threadId}/comments/{commentId}/likes endpoint', () => {
     await CommentLikesTableTestHelper.cleanTable();
   });
 
+  let userId = '';
+  const username = 'dicoding';
+  const password = 'secret';
   let globalUserAccessToken = '';
-  let threadId = '';
-  let commentId = '';
+  const threadId = 'thread-123';
+  const commentId = 'comment-123';
 
   beforeEach(async () => {
-    const server = await createServer(container);
-
     // add user
-    await server.inject({
-      method: 'POST',
-      url: '/users',
-      payload: {
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'Dicoding Indonesia',
-      },
+    const addUserResponse = await UserAPITestHelper.addUser({
+      username,
+      password,
+      fullname: 'Dicoding Indonesia',
     });
 
+    const { data: { addedUser } } = JSON.parse(addUserResponse.payload);
+    userId = addedUser.id;
+
     // login user
-    const loginResponse = await server.inject({
-      method: 'POST',
-      url: '/authentications',
-      payload: {
-        username: 'dicoding',
-        password: 'secret',
-      },
+    const loginResponse = await UserAPITestHelper.loginUser({
+      username,
+      password,
     });
 
     const { data: { accessToken } } = JSON.parse(loginResponse.payload);
     globalUserAccessToken = accessToken;
 
     // add thread
-    const addThreadResponse = await server.inject({
-      method: 'POST',
-      url: '/threads',
-      payload: {
-        title: 'Judul Thread',
-        body: 'Body thread.',
-      },
-      headers: {
-        Authorization: `Bearer ${globalUserAccessToken}`,
-      },
+    await ThreadsTableTestHelper.addThread({
+      id: threadId,
+      title: 'Judul',
+      body: 'Body',
+      owner: userId,
     });
-
-    const { data: { addedThread } } = JSON.parse(addThreadResponse.payload);
-    threadId = addedThread.id;
 
     // add comment
-    const addCommentResponse = await server.inject({
-      method: 'POST',
-      url: `/threads/${threadId}/comments`,
-      payload: {
-        content: 'Komentar',
-      },
-      headers: {
-        Authorization: `Bearer ${globalUserAccessToken}`,
-      },
+    await CommentsTableTestHelper.addComment({
+      id: commentId,
+      content: 'Komentar',
+      threadId,
+      owner: userId,
     });
-
-    const { data: { addedComment } } = JSON.parse(addCommentResponse.payload);
-    commentId = addedComment.id;
   });
 
   describe('when PUT /threads/{threadId}/comments/{commentId}/likes', () => {

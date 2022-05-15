@@ -1,9 +1,9 @@
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const CommentLikeRepository = require('../../../Domains/comment_likes/CommentLikeRepository');
-const LikeOrDislikeCommentUseCase = require('../LikeOrDislikeCommentUseCase');
+const LikeCommentToggleUseCase = require('../LikeCommentToggleUseCase');
 
-describe('LikeOrDislikeUseCase', () => {
+describe('LikeCommentToggleUseCase', () => {
   it('should orchestrating the like comment if comment like not available', async () => {
     // Arrange
     const useCasePayload = {
@@ -16,9 +16,9 @@ describe('LikeOrDislikeUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingCommentLikeRepository = new CommentLikeRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
-    mockingCommentLikeRepository.checkAvailabilityCommentLike
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkCommentAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentLikeRepository.checkCommentAvailabilityLike
       = jest.fn(() => Promise.resolve(false));
     mockingCommentLikeRepository.addCommentLike = jest.fn(() => Promise.resolve({
       id: 'comment-like-123',
@@ -27,21 +27,21 @@ describe('LikeOrDislikeUseCase', () => {
     }));
     mockingCommentLikeRepository.deleteCommentLike = jest.fn(() => Promise.resolve());
 
-    const likeOrDislikeCommentUseCase = new LikeOrDislikeCommentUseCase({
+    const likeCommentToggleUseCase = new LikeCommentToggleUseCase({
       commentRepository: mockingCommentRepository,
       threadRepository: mockingThreadRepository,
       commentLikeRepository: mockingCommentLikeRepository,
     });
 
     // Action
-    await likeOrDislikeCommentUseCase.execute(useCasePayload);
+    await likeCommentToggleUseCase.execute(useCasePayload);
 
     // Assert
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
-    expect(mockingCommentRepository.checkAvailabilityComment)
+    expect(mockingCommentRepository.checkCommentAvailability)
       .toBeCalledWith(useCasePayload.commentId);
-    expect(mockingCommentLikeRepository.checkAvailabilityCommentLike)
+    expect(mockingCommentLikeRepository.checkCommentAvailabilityLike)
       .toBeCalledWith({
         commentId: useCasePayload.commentId,
         owner: useCasePayload.owner,
@@ -67,9 +67,9 @@ describe('LikeOrDislikeUseCase', () => {
     const mockingCommentRepository = new CommentRepository();
     const mockingCommentLikeRepository = new CommentLikeRepository();
 
-    mockingThreadRepository.checkAvailabilityThread = jest.fn(() => Promise.resolve());
-    mockingCommentRepository.checkAvailabilityComment = jest.fn(() => Promise.resolve());
-    mockingCommentLikeRepository.checkAvailabilityCommentLike
+    mockingThreadRepository.checkThreadAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentRepository.checkCommentAvailability = jest.fn(() => Promise.resolve());
+    mockingCommentLikeRepository.checkCommentAvailabilityLike
       = jest.fn(() => Promise.resolve(true));
     mockingCommentLikeRepository.addCommentLike = jest.fn(() => Promise.resolve({
       id: 'comment-like-123',
@@ -78,21 +78,21 @@ describe('LikeOrDislikeUseCase', () => {
     }));
     mockingCommentLikeRepository.deleteCommentLike = jest.fn(() => Promise.resolve());
 
-    const likeOrDislikeCommentUseCase = new LikeOrDislikeCommentUseCase({
+    const likeCommentToggleUseCase = new LikeCommentToggleUseCase({
       commentRepository: mockingCommentRepository,
       threadRepository: mockingThreadRepository,
       commentLikeRepository: mockingCommentLikeRepository,
     });
 
     // Action
-    await likeOrDislikeCommentUseCase.execute(useCasePayload);
+    await likeCommentToggleUseCase.execute(useCasePayload);
 
     // Assert
-    expect(mockingThreadRepository.checkAvailabilityThread)
+    expect(mockingThreadRepository.checkThreadAvailability)
       .toBeCalledWith(useCasePayload.threadId);
-    expect(mockingCommentRepository.checkAvailabilityComment)
+    expect(mockingCommentRepository.checkCommentAvailability)
       .toBeCalledWith(useCasePayload.commentId);
-    expect(mockingCommentLikeRepository.checkAvailabilityCommentLike)
+    expect(mockingCommentLikeRepository.checkCommentAvailabilityLike)
       .toBeCalledWith({
         commentId: useCasePayload.commentId,
         owner: useCasePayload.owner,

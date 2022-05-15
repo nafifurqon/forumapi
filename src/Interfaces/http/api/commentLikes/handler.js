@@ -1,4 +1,4 @@
-const LikeOrDislikeCommentUseCase = require('../../../../Applications/use_case/LikeOrDislikeCommentUseCase');
+const LikeCommentToggleUseCase = require('../../../../Applications/use_case/LikeCommentToggleUseCase');
 
 class CommentLikesHandler {
   constructor(container) {
@@ -11,9 +11,9 @@ class CommentLikesHandler {
     const { threadId, commentId } = request.params;
     const { id: owner } = request.auth.credentials;
 
-    const likeOrDislikeCommentUseCase
-      = this._container.getInstance(LikeOrDislikeCommentUseCase.name);
-    await likeOrDislikeCommentUseCase.execute({
+    const likeCommentToggleUseCase
+      = this._container.getInstance(LikeCommentToggleUseCase.name);
+    await likeCommentToggleUseCase.execute({
       threadId, commentId, owner,
     });
 
