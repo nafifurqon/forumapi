@@ -1,5 +1,5 @@
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/database/UsersTableTestHelper');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const DetailThread = require('../../../Domains/threads/entities/DetailThread');
 const NewThread = require('../../../Domains/threads/entities/NewThread');

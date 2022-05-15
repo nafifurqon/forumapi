@@ -1,8 +1,8 @@
 const pool = require('../../database/postgres/pool');
-const AuthenticationsTableTestHelper = require('../../../../tests/AuthenticationsTableTestHelper');
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
+const AuthenticationsTableTestHelper = require('../../../../tests/database/AuthenticationsTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/database/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/database/CommentsTableTestHelper');
 const createServer = require('../createServer');
 const container = require('../../container');
 

@@ -1,7 +1,7 @@
-const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
-const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
-const CommentsTableTestHelper = require('../../../../tests/CommentsTableTestHelper');
-const CommentLikesTableTestHelper = require('../../../../tests/CommentLikesTableTestHelper');
+const UsersTableTestHelper = require('../../../../tests/database/UsersTableTestHelper');
+const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableTestHelper');
+const CommentsTableTestHelper = require('../../../../tests/database/CommentsTableTestHelper');
+const CommentLikesTableTestHelper = require('../../../../tests/database/CommentLikesTableTestHelper');
 const pool = require('../../database/postgres/pool');
 const CommentLikeRepositoryPostgres = require('../CommentLikeRepositoryPostgres');
 
