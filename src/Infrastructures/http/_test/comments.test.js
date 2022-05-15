@@ -296,18 +296,6 @@ describe('/threads/{threadId}/comments endpoint', () => {
         owner: anotherUserId,
       });
 
-      // add comment
-      await server.inject({
-        method: 'POST',
-        url: `/threads/${threadId}/comments`,
-        payload: {
-          content: 'Komentar',
-        },
-        headers: {
-          Authorization: `Bearer ${globalUserAccessToken}`,
-        },
-      });
-
       // Action
       const response = await server.inject({
         method: 'DELETE',

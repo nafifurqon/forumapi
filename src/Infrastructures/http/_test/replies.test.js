@@ -205,54 +205,34 @@ describe('/threads/{threadId}/comments/{commentId}/replies endpoint', () => {
       expect(responseJson.message).toEqual('komentar tidak ditemukan di database');
     });
 
-    it('should response 403 when owner can not access the reply', async () => {
+    it('should response 403 when user can not access the reply', async () => {
       // Arrange
       const server = await createServer(container);
 
+      const anotherUserId = 'another_user-123';
+      const anotherUserReplyId = 'reply-124';
+
       // add another user
-      await server.inject({
-        method: 'POST',
-        url: '/users',
-        payload: {
-          username: 'anotheruser',
-          password: 'secret',
-          fullname: 'Another User',
-        },
+      await UsersTableTestHelper.addUser({
+        id: anotherUserId,
+        username: 'anotheruser',
+        fullname: 'Another User',
       });
 
-      // login another user
-      const loginResponse = await server.inject({
-        method: 'POST',
-        url: '/authentications',
-        payload: {
-          username: 'anotheruser',
-          password: 'secret',
-        },
+      // add reply by another user
+      await RepliesTableTestHelper.addReply({
+        id: anotherUserReplyId,
+        content: 'Balasan',
+        commentId,
+        owner: anotherUserId,
       });
-      const { data } = JSON.parse(loginResponse.payload);
-      const anotherUserToken = data.accessToken;
-
-      // add reply
-      const addReplyResponse = await server.inject({
-        method: 'POST',
-        url: `/threads/${threadId}/comments/${commentId}/replies`,
-        payload: {
-          content: 'Balasan',
-        },
-        headers: {
-          Authorization: `Bearer ${globalUserAccessToken}`,
-        },
-      });
-      const addReplyResponseJson = JSON.parse(addReplyResponse.payload);
-      const { data: { addedReply } } = addReplyResponseJson;
-      const replyid = addedReply.id;
 
       // Action
       const response = await server.inject({
         method: 'DELETE',
-        url: `/threads/${threadId}/comments/${commentId}/replies/${replyid}`,
+        url: `/threads/${threadId}/comments/${commentId}/replies/${anotherUserReplyId}`,
         headers: {
-          Authorization: `Bearer ${anotherUserToken}`,
+          Authorization: `Bearer ${globalUserAccessToken}`,
         },
       });
 
