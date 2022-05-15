@@ -5,6 +5,7 @@ const ThreadsTableTestHelper = require('../../../../tests/database/ThreadsTableT
 const CommentsTableTestHelper = require('../../../../tests/database/CommentsTableTestHelper');
 const createServer = require('../createServer');
 const container = require('../../container');
+const UserAPITestHelper = require('../../../../tests/http/UserAPITestHelper');
 
 describe('/threads endpoint', () => {
   afterAll(async () => {
@@ -18,30 +19,26 @@ describe('/threads endpoint', () => {
     await CommentsTableTestHelper.cleanTable();
   });
 
+  let userId = '';
+  const username = 'dicoding';
+  const password = 'secret';
   let globalUserAccessToken = '';
 
   beforeEach(async () => {
-    const server = await createServer(container);
-
     // add user
-    await server.inject({
-      method: 'POST',
-      url: '/users',
-      payload: {
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'Dicoding Indonesia',
-      },
+    const addUserResponse = await UserAPITestHelper.addUser({
+      username,
+      password,
+      fullname: 'Dicoding Indonesia',
     });
 
+    const { data: { addedUser } } = JSON.parse(addUserResponse.payload);
+    userId = addedUser.id;
+
     // login user
-    const loginResponse = await server.inject({
-      method: 'POST',
-      url: '/authentications',
-      payload: {
-        username: 'dicoding',
-        password: 'secret',
-      },
+    const loginResponse = await UserAPITestHelper.loginUser({
+      username,
+      password,
     });
 
     const { data: { accessToken } } = JSON.parse(loginResponse.payload);
