@@ -1,4 +1,4 @@
-class LikeOrDislikeCommentUseCase {
+class LikeCommentToggleUseCase {
   constructor({
     commentRepository,
     threadRepository,
@@ -31,4 +31,4 @@ class LikeOrDislikeCommentUseCase {
   }
 }
 
-module.exports = LikeOrDislikeCommentUseCase;
+module.exports = LikeCommentToggleUseCase;

@@ -1,9 +1,9 @@
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const CommentLikeRepository = require('../../../Domains/comment_likes/CommentLikeRepository');
-const LikeOrDislikeCommentUseCase = require('../LikeOrDislikeCommentUseCase');
+const LikeCommentToggleUseCase = require('../LikeCommentToggleUseCase');
 
-describe('LikeOrDislikeUseCase', () => {
+describe('LikeCommentToggleUseCase', () => {
   it('should orchestrating the like comment if comment like not available', async () => {
     // Arrange
     const useCasePayload = {
@@ -27,14 +27,14 @@ describe('LikeOrDislikeUseCase', () => {
     }));
     mockingCommentLikeRepository.deleteCommentLike = jest.fn(() => Promise.resolve());
 
-    const likeOrDislikeCommentUseCase = new LikeOrDislikeCommentUseCase({
+    const likeCommentToggleUseCase = new LikeCommentToggleUseCase({
       commentRepository: mockingCommentRepository,
       threadRepository: mockingThreadRepository,
       commentLikeRepository: mockingCommentLikeRepository,
     });
 
     // Action
-    await likeOrDislikeCommentUseCase.execute(useCasePayload);
+    await likeCommentToggleUseCase.execute(useCasePayload);
 
     // Assert
     expect(mockingThreadRepository.checkThreadAvailability)
@@ -78,14 +78,14 @@ describe('LikeOrDislikeUseCase', () => {
     }));
     mockingCommentLikeRepository.deleteCommentLike = jest.fn(() => Promise.resolve());
 
-    const likeOrDislikeCommentUseCase = new LikeOrDislikeCommentUseCase({
+    const likeCommentToggleUseCase = new LikeCommentToggleUseCase({
       commentRepository: mockingCommentRepository,
       threadRepository: mockingThreadRepository,
       commentLikeRepository: mockingCommentLikeRepository,
     });
 
     // Action
-    await likeOrDislikeCommentUseCase.execute(useCasePayload);
+    await likeCommentToggleUseCase.execute(useCasePayload);
 
     // Assert
     expect(mockingThreadRepository.checkThreadAvailability)
