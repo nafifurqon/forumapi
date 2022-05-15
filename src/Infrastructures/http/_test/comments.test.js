@@ -285,35 +285,30 @@ describe('/threads/{threadId}/comments endpoint', () => {
       expect(responseJson.message).toEqual('komentar tidak ditemukan di database');
     });
 
-    it('should response 403 when owner can not access the comment', async () => {
+    it('should response 403 when user can not access the comment', async () => {
       // Arrange
       const server = await createServer(container);
 
+      const anotherUserId = 'another_user-123';
+      const anotherUserCommentId = 'comment-124';
+
       // add another user
-      await server.inject({
-        method: 'POST',
-        url: '/users',
-        payload: {
-          username: 'anotheruser',
-          password: 'secret',
-          fullname: 'Another User',
-        },
+      await UsersTableTestHelper.addUser({
+        id: anotherUserId,
+        username: 'anotheruser',
+        fullname: 'Another User',
       });
 
-      // login another user
-      const loginResponse = await server.inject({
-        method: 'POST',
-        url: '/authentications',
-        payload: {
-          username: 'anotheruser',
-          password: 'secret',
-        },
+      // add comment by another user
+      await CommentsTableTestHelper.addComment({
+        id: anotherUserCommentId,
+        content: 'Komentar',
+        threadId,
+        owner: anotherUserId,
       });
-      const { data } = JSON.parse(loginResponse.payload);
-      const anotherUserToken = data.accessToken;
 
       // add comment
-      const addCommentResponse = await server.inject({
+      await server.inject({
         method: 'POST',
         url: `/threads/${threadId}/comments`,
         payload: {
@@ -323,16 +318,13 @@ describe('/threads/{threadId}/comments endpoint', () => {
           Authorization: `Bearer ${globalUserAccessToken}`,
         },
       });
-      const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
-      const { data: { addedComment } } = addCommentResponseJson;
-      const commentId = addedComment.id;
 
       // Action
       const response = await server.inject({
         method: 'DELETE',
-        url: `/threads/${threadId}/comments/${commentId}`,
+        url: `/threads/${threadId}/comments/${anotherUserCommentId}`,
         headers: {
-          Authorization: `Bearer ${anotherUserToken}`,
+          Authorization: `Bearer ${globalUserAccessToken}`,
         },
       });
 
